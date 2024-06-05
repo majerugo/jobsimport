@@ -13,8 +13,8 @@ printMessage("Starting...");
 
 
 /* import jobs from regionsjob.xml */
-$jobsImporter = new JobsImporter(SQL_HOST, SQL_USER, SQL_PWD, SQL_DB, RESSOURCES_DIR . 'regionsjob.xml');
-$count = $jobsImporter->importJobs();
+$jobsImporter = new JobsImporter(SQL_HOST, SQL_USER, SQL_PWD, SQL_DB, RESSOURCES_DIR . 'jobteaser.json');
+$count = $jobsImporter->importJobsJSON();
 
 printMessage("> {count} jobs imported.", ['{count}' => $count]);
 

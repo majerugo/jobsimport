@@ -20,7 +20,7 @@ final class JobsImporter
         }
     }
 
-    public function importJobs(): int
+    public function importJobsXML(): int
     {
         /* remove existing items */
         $this->db->exec('DELETE FROM job');
@@ -38,6 +38,32 @@ final class JobsImporter
                 . '\'' . addslashes((string) $item->url) . '\', '
                 . '\'' . addslashes((string) $item->company) . '\', '
                 . '\'' . addslashes((string) $item->pubDate) . '\')'
+            );
+            $count++;
+        }
+        return $count;
+    }
+
+    public function importJobsJSON(): int
+    {
+        /* remove existing items */
+        $this->db->exec('DELETE FROM job');
+
+        /* parse JSON file */
+        $json = json_decode(file_get_contents($this->file), true);
+
+        $offerUrlPrefix = $json["offerUrlPrefix"];
+        /* import each item */
+        $count = 0;
+        foreach ($json["offers"] as $item) {
+            $date = (DateTime::createFromFormat('D M d H:i:s T Y', $item['publishedDate']))->format('Y-m-d H:i:s');
+            $this->db->exec('INSERT INTO job (reference, title, description, url, company_name, publication) VALUES ('
+                . '\'' . addslashes($item['reference']) . '\', '
+                . '\'' . addslashes($item['title']) . '\', '
+                . '\'' . addslashes($item['description']) . '\', '
+                . '\'' . addslashes("{$offerUrlPrefix}{$item['urlPath']}") . '\', '
+                . '\'' . addslashes($item['companyname']) . '\', '
+                . '\'' . addslashes($date) . '\')'
             );
             $count++;
         }
